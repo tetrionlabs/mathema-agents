@@ -1,0 +1,21 @@
+# skills/ is the source of truth; dist/ is generated from it. A skill
+# edited without re-rendering ships a stale adapter to every non-Claude
+# tool, and nothing else would notice, so the check runs on every push.
+name: skills
+
+on:
+  push:
+    # main and every release line (v0.6, ...) that mathema fetches
+    branches: [main, "v*"]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # no dependencies: this repository is configuration only
+      - run: python3 scripts/check_skills.py

@@ -1,0 +1,5 @@
+# secret markdown: private notes, never committed
+.smd/
+
+# macOS
+.DS_Store
