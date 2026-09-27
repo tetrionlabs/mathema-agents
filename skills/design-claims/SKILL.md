@@ -159,7 +159,6 @@ This is the stage this skill mainly does. Three parts:
    module.qualname:
      intent: one line, what the function is for
      signature: "(types) -> type"
-     grammar: python-expression   # names the dialect the law strings below are written in
      claims:
        - name: odd
          law: "f(-x) == -f(x)"
@@ -177,9 +176,8 @@ This is the stage this skill mainly does. Three parts:
    Pin a route only to *say something*: `derive` to record that you believe
    a proof exists even where no available tool can check it yet, or `probe`
    to say a symbolic proof is not what you want here. If you have no such
-   intent, leave the field out. Set `grammar` to whatever names the dialect
-   your `law` strings are actually written in; don't leave it unset and
-   assume a reader will guess right.
+   intent, leave the field out. Omit `grammar`; mathema's claim language is
+   the default. Set it only to mark a claim written for another checker.
 
 #### Strings and records take a language
 
