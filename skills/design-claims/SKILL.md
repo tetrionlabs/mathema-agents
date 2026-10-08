@@ -214,9 +214,7 @@ enforces, and never wider to farm falsifications. A length is code points
 crash on a hazard is the built-in claim's finding; don't narrow a value
 claim's language to dodge it unless the caller truly never sends that
 input. Each hazard costs a call, so batch language claims into one
-`adjudicate_targets`. Until the MCP server answers language questions, ask
-Python: `mathema.languages.resolve_language("identifier").explain(value)`
-says why a value is not a member. Tables (dataframes) are out of scope.
+`adjudicate_targets`. Tables (dataframes) are out of scope.
 
 Expect text claims to come back `holds` (the probe tries the language's
 hazards first, then shrinks), and `proven` only over a finite set of a
