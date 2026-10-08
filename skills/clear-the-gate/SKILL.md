@@ -26,7 +26,7 @@ That wall is about who decides, not who types. Everything around the
 decision is yours: the witness, the source, which verbs are legal, drafting
 a correction, running it to see whether it holds, and what comes after.
 
-**Written against mathema 0.6** (`>=0.6,<0.7`). Tool names, the verdict and
+**Written against mathema 0.6.1** (`>=0.6.1,<0.7`). Tool names, the verdict and
 acceptance vocabularies, the claim grammar and the badge artifacts all move
 between minor versions. If `mathema --version` reports a different line,
 say so and check the surface rather than trusting this document.
@@ -55,6 +55,7 @@ refuses.
 | proven | nothing, a proof is its own acceptance |
 | a whole record after a merge | `reconciled`, no claim name |
 | a record whose function moved | `reconciled --from OLD_KEY`, keyed by the new name |
+| a project's or third-party library row gating `verify` | `trusted`, a person's word that the row is right |
 
 **There is no accepting a bug.** If the code is wrong, the code changes,
 and the counterexample replays until the claim proves. `--as risk` on a
@@ -75,6 +76,10 @@ the commit its truth held at. Use it when the claim was mis-stated and
 there is nothing to learn.
 
 The test: did this teach you about the code, or only about the claim?
+
+A falsified policy row (a missing or absent input the code handles
+differently than its row says) retires the same way, by the row's
+name: `mathema accept KEY missing[x] --as discovery --corrected "..."`.
 
 ## Pre-adjudicate any correction
 

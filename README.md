@@ -61,18 +61,20 @@ is a different product and does not live here.
 Three steps: install mathema, register its MCP server (only if you drive
 it over MCP), and load these skills into your agent.
 
-These skills target **mathema 0.6**; pin to that line so the tools,
+These skills target **mathema 0.6.1**; pin to that line so the tools,
 resources and grammar they describe match what you run.
 
 **1. Install mathema** in your project's environment:
 
 ```
-pip install "mathema[mcp]>=0.6,<0.7"
+pip install "mathema[mcp,language]>=0.6.1,<0.7"
 ```
 
 The `[mcp]` extra is only for the MCP server; plain `pip install
-"mathema>=0.6,<0.7"` is enough to use it from the CLI (`mathema verify`,
+"mathema>=0.6.1,<0.7"` is enough to use it from the CLI (`mathema verify`,
 `mathema check`), which the `design-claims` skill works against directly.
+The `[language]` extra brings `mathema-language`, which claims over
+strings and records (`L[unicode]`, `L[app.forms.SignupForm]`) need.
 
 **2. Register the MCP server** (skip if you only use the CLI). mathema
 serves over stdio via `mathema mcp serve`. Most clients take a JSON

@@ -29,7 +29,7 @@ claim and an implementation disagree; it does not say which is wrong. That
 turns on intent, not evidence, which is why there is no accept tool and why
 `pending_decisions` can only tell you a decision is owed.
 
-**Written against mathema 0.6** (`>=0.6,<0.7`). Tool names, the verdict and
+**Written against mathema 0.6.1** (`>=0.6.1,<0.7`). Tool names, the verdict and
 acceptance vocabularies, the claim grammar and the badge artifacts all move
 between minor versions. If `mathema --version` reports a different line,
 say so and check the surface rather than trusting this document.
@@ -123,7 +123,8 @@ cost, and the judgement calls.
    - a pure single-delegate wrapper earns `let g = pkg.mod.core, f =:= g`;
    - a structurally bounded but unannotated return earns a hint to
      annotate it;
-   - a bare `str` parameter earns `is_arbitrary_input_safe[param]`.
+   - a bare `str` parameter earns `is_language_defined[param]`,
+     `is_encoding_safe[param]` and `is_length_safe[param]`.
 
    So: mark the return, then ask. On an unmarked codebase the battery looks
    worthless and stays that way until the signature carries what it reads.
@@ -378,18 +379,17 @@ use the bare form for one you believe accepts everything. mathema suggests
 the region form for a partial function, and suggests neither for a total
 one.
 
-## String parameters have their own hazard check
+## String and record parameters take a language
 
-`is_arbitrary_input_safe[param]` fuzzes a bare `str` parameter over an
-edge-case corpus and **shrinks any unguarded crash to a minimal witness**,
-on the `probe:minimal_example` route. A guarded raise or a deliberate
-`ValueError` holds; an accidental `IndexError` or `KeyError` from
-unvalidated input falsifies with the smallest input that triggers it. It is
-auto-suggested for every bare-`str` parameter, and the shrunk witness is
-directly usable as a regression test. The derive half declines by
-construction: "no accidental crash on any string" is not something a
-symbolic route can establish, so the member is empirical and the record
-says so.
+`is_language_defined[param]` (called `is_arbitrary_input_safe` before
+0.6.1, still read) feeds a `str` parameter the hazards of its language
+and **shrinks any unguarded crash to a minimal witness**, on the
+`probe:minimal_example` route. A deliberate `ValueError` holds; an
+`IndexError` or `KeyError` from unvalidated input falsifies, and the
+witness says whether it lies inside or outside the language. The derive
+half declines a string except over a finite language. Choosing the
+language, record schemas by dotted path, paths and `| {absent}` are in
+the `design-claims` skill, Stage 1.
 
 ## Claims compound, so build the base and then spend it
 
@@ -513,6 +513,12 @@ well-covered code: the implementation carries years of evidence and your
 claim is minutes old, so a novel falsification is more likely a misreading
 than a bug nobody has hit. The level that matters is the function's own,
 not the repository's.
+
+Check which line failed first. Since 0.6.1 a record shows the mathematics
+and the float64 computation separately, and a claim is falsified when
+either is; a failure only on the computation line (an overflow, a NaN
+from present inputs) is about the code's arithmetic, and the record
+names the condition number and offers a narrower domain.
 
 Before reporting any falsification as a defect, **write the claim that
 would hold if the code were right and check it**; a held claim that cleanly
