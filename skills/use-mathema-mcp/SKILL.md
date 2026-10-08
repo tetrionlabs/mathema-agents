@@ -557,15 +557,19 @@ skill, Stage 4, for the longer form.
   with `n=0` even when its own arguments take a non-raising branch, and
   `assuming is_defined(f)` does not rescue it. If a cheap claim returns
   `unknown` with no trials, check whether the function refuses its defaults.
-- **A `skipped` row tells you nothing about why.** There is no reason code
-  on skips the way there is on derive blockers, so you cannot tell a
-  mis-stated claim from one the checker could not reach. Bisect against a
-  scratch root.
-- **Some code is simply unclaimable.** Two-dimensional arrays and dicts
-  cannot be synthesised, so every claim comes back `skipped` on probe and
-  `unknown` on derive, often most of an orchestration layer. Say so in your
-  report, name the functions, and let the tests carry that half; padding
-  the file to hide it is worse than the gap.
+- **Read a `skipped` row's note before anything else.** The note says why
+  (a domain key that matches no parameter, a string bound with a hole),
+  sometimes with a subroute on the verdict (`skipped:misspecified`), and
+  text output prints the row as `unknown` with that reason.
+- **Give a dict parameter a shape.** A bare `dict` is not drawn as a dict,
+  so its claims fail on the wrong type; annotate it with a TypedDict (or
+  name a JSON Schema, `L[app.schemas.ORDER]`) and it is drawn and lifted
+  as a record. Two-dimensional arrays are drawn (`R^(3,4)`, `Mat("n",
+  "m")`).
+- **Some code is simply unclaimable.** An orchestration layer that only
+  wires services together often has nothing the checker can draw. Say so
+  in your report, name the functions, and let the tests carry that half;
+  padding the file to hide it is worse than the gap.
 
 ## When the checker itself looks wrong, say so
 
