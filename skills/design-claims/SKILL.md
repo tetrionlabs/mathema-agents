@@ -207,6 +207,17 @@ what the caller really passes:
 - **Trees.** Bound the shape, `L[app.Comment, depth <= 20]`; an unbounded
   recursive language offers a member one past the recursion limit.
 
+Three judgement calls the checker cannot make for you. The language is
+the one the function is really fed: never narrower than the caller
+enforces, and never wider to farm falsifications. A length is code points
+(Python's `len`), not bytes and not the characters a reader sees. And a
+crash on a hazard is the built-in claim's finding; don't narrow a value
+claim's language to dodge it unless the caller truly never sends that
+input. Each hazard costs a call, so batch language claims into one
+`adjudicate_targets`. Until the MCP server answers language questions, ask
+Python: `mathema.languages.resolve_language("identifier").explain(value)`
+says why a value is not a member. Tables (dataframes) are out of scope.
+
 Expect text claims to come back `holds` (the probe tries the language's
 hazards first, then shrinks), and `proven` only over a finite set of a
 function mathema can show is pure. A record claim over numeric fields, and
