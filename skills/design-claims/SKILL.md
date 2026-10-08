@@ -31,7 +31,7 @@ before you report anything about it. If you cannot run the checker (no
 implementation available, no test harness), say that plainly instead of
 asserting a verdict.
 
-**Written against mathema 0.6** (`>=0.6,<0.7`). Tool names, the verdict and
+**Written against mathema 0.6.1** (`>=0.6.1,<0.7`). Tool names, the verdict and
 acceptance vocabularies, the claim grammar and the badge artifacts all move
 between minor versions. If `mathema --version` reports a different line,
 say so and check the surface rather than trusting this document.
@@ -90,7 +90,7 @@ This is the stage this skill mainly does. Three parts:
 
 1. **Read the function, not just its name.** Get its intent (its
    docstring if it has one, or ask), its parameters and their kinds
-   (scalar, sequence, int), and whether it's pure. Impure functions still
+   (scalar, sequence, int, string, record), and whether it's pure. Impure functions still
    get claims about determinism and effects, but algebraic laws over their
    output are not meaningful; say so rather than proposing them.
 
@@ -159,7 +159,6 @@ This is the stage this skill mainly does. Three parts:
    module.qualname:
      intent: one line, what the function is for
      signature: "(types) -> type"
-     grammar: python-expression   # names the dialect the law strings below are written in
      claims:
        - name: odd
          law: "f(-x) == -f(x)"
@@ -177,9 +176,74 @@ This is the stage this skill mainly does. Three parts:
    Pin a route only to *say something*: `derive` to record that you believe
    a proof exists even where no available tool can check it yet, or `probe`
    to say a symbolic proof is not what you want here. If you have no such
-   intent, leave the field out. Set `grammar` to whatever names the dialect
-   your `law` strings are actually written in; don't leave it unset and
-   assume a reader will guess right.
+   intent, leave the field out. Omit `grammar`; mathema's claim language is
+   the default. Set it only to mark a claim written for another checker.
+
+#### Strings and records take a language
+
+A string or record parameter is quantified over a language, `L[...]`,
+served by the `mathema-language` package (`pip install "mathema[language]"`,
+also in `mathema[all]`); without it the claim is `unknown`, "needs
+mathema-language". The language decides what the verdict covers, so pick
+what the caller really passes:
+
+- **Text.** `L[unicode]` for anything a user, file or service sends, and
+  narrow only to what the calling code enforces: `L[ascii, len <= 32]`,
+  `L[unicode] \ {""}`, or a format (`L[uuid]`, `L[iso_date]`, `L[email]`,
+  `L[json]`). A `Literal`, a `str` `Enum` or a guard to a set is a finite
+  set, swept member by member.
+- **Records.** Name the schema the application already has, by dotted
+  path: `L[app.forms.SignupForm]` (pydantic), `L[app.db.Order]`
+  (SQLAlchemy), a Django model, a dataclass, a TypedDict, or a JSON Schema
+  dict. It stays at the top level of its module; never copy it into the
+  claim. A parameter annotated with the class infers it.
+- **Paths** narrow a record: `o.lines[*].qty in [1, 10]`,
+  `o.address.zip in L[digit]`. A bound means the value is there; add
+  `| {absent}` to keep records where the path is `None`, a key left out
+  or an index past the end. A `None` list element or a NaN is a hole,
+  `missing`, not absent.
+- **Trees.** Bound the shape, `L[app.Comment, depth <= 20]`; an unbounded
+  recursive language offers a member one past the recursion limit.
+
+Three judgement calls the checker cannot make for you. The language is
+the one the function is really fed: never narrower than the caller
+enforces, and never wider to farm falsifications. A length is code points
+(Python's `len`), not bytes and not the characters a reader sees. And a
+crash on a hazard is the built-in claim's finding; don't narrow a value
+claim's language to dodge it unless the caller truly never sends that
+input. Each hazard costs a call, so batch language claims into one
+`adjudicate_targets`. Tables (dataframes) are out of scope.
+
+Expect text claims to come back `holds` (the probe tries the language's
+hazards first, then shrinks), and `proven` only over a finite set of a
+function mathema can show is pure. A record claim over numeric fields, and
+text fields read only through `len`, is proven from the schema's bounds; a
+tree claim under a depth bound is proven by structural induction.
+
+The built-in claims for text are `is_language_defined(s)` (no unguarded
+crash on members or on the near non-members it also tries, so a narrower
+language does not excuse a crash just outside it; refuse with
+`ValueError`), `excluded_outside_domain(s)` (needs a language with an
+outside: `L[unicode]` has none and is `unknown`, a refinement such as
+`len >= 1` or a format has one), `is_encoding_safe(s)` and
+`is_length_safe(s)`. Outputs take `f(s) in L[slug]` and
+`"<" not in f(s)`. For a function that refuses some inputs on purpose,
+`narrow_language(L, fn)` from `mathema_language.narrowing`, assigned at
+module level, is the language of what it accepts, for the next function's
+claims.
+
+#### Say what happens to missing, absent and empty input
+
+`absent` (`None`, the object is not there) and `missing` (`nan`, `NA`,
+`null`, `NaT`, a slot with no value) are different values. mathema writes
+a policy claim for every parameter that admits one (`missing(f, x)
+propagates`, `absent(f, x) raises(TypeError)`, `missing(f, xs, null)
+drops`); `mathema claims KEY` lists them and `--write` saves them to
+`claims/policies.claims.yaml`. Read them as intent, since a raise at a
+missing input that no claim accounts for is falsified. The empty input is
+judged strictly too: `nan` or `None` for `[]` falsifies unless a claim
+states it (`f([]) in {missing}`, `raises(f([]), ValueError)`,
+`f([]) == 0`).
 
 ### Stage 2: Implement, or generate
 

@@ -29,7 +29,7 @@ the body satisfies it. The prior is also the comfortable one, as the
 until shown otherwise, so a falsification means "not implemented yet" or
 "implemented wrong", never a mystery.
 
-**Written against mathema 0.6** (`>=0.6,<0.7`). Tool names, the verdict and
+**Written against mathema 0.6.1** (`>=0.6.1,<0.7`). Tool names, the verdict and
 acceptance vocabularies, the claim grammar and the badge artifacts all move
 between minor versions. If `mathema --version` reports a different line,
 say so and check the surface rather than trusting this document.
@@ -111,9 +111,14 @@ instead of having it retrofitted:
   looks, and the suggestion battery is gated on them: an unmarked
   signature earns almost no suggestions, a marked one earns the bound
   written out.
-- **`Literal[...]` on every string mode parameter**, so the domain is
-  declared rather than discovered, and a bare `str` parameter only where
-  input is genuinely open, where it earns the arbitrary-input fuzz check.
+- **`Literal[...]` or a `str` `Enum` on every string mode parameter**, so
+  the domain is a finite set, declared rather than discovered. A bare
+  `str` only where input is genuinely open, and then state its language
+  (`L[unicode, len <= 80]`, or `Annotated[str, MaxLen(80)]`, which infers
+  it).
+- **Records get a schema**: a pydantic model, dataclass, TypedDict or
+  table at module level, so a claim names it as `L[pkg.mod.Model]` and
+  derive can prove over its numeric fields.
 - **Refusals are part of the spec.** A function that rejects some inputs
   does so with an explicit guard and a claim that says so
   (`raises(f(...), ValueError)`, or a stated `is_defined` region). The
@@ -175,10 +180,12 @@ ceiling so both halves are read as what they are.
 
 Raising the ceiling is the compendium's job, not your code's. A
 compendium entry models where a library's functions are defined and how
-they fail, which is what lets `is_compendium_safe(<library>)` adjudicate
-that an unguarded nan or inf cannot arrive silently through it; claim it
-wherever the library is covered. More compendiums are planned, and that
-is the design: knowledge established about a library once transfers to
+they fail, which is what lets `is_library_safe(<library>)` (formerly
+`is_compendium_safe`) adjudicate that an unguarded nan or inf cannot
+arrive silently through it; claim it wherever the library is covered. The
+wheel bundles `math`, numpy, pandas and polars, a project file such as
+`claims/numpy.claims.yaml` adds or replaces rows by name, and `mathema
+compendium status` shows where the project stands. That is the design: knowledge established about a library once transfers to
 every repository that calls it, instead of being rebuilt in each. The gap
 between your score and the ceiling is your work; the ceiling itself moves
 as the compendiums grow.

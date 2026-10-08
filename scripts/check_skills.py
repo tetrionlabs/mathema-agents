@@ -24,7 +24,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 SKILLS = ROOT / "skills"
 # the mathema line these skills describe; bump it with the skills, not
 # independently, since the pin is what tells a reader which surface they got
-LINE = "0.6"
+LINE = "0.6.1"
 
 problems: list[str] = []
 
