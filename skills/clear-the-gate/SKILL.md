@@ -26,7 +26,7 @@ That wall is about who decides, not who types. Everything around the
 decision is yours: the witness, the source, which verbs are legal, drafting
 a correction, running it to see whether it holds, and what comes after.
 
-**Written against mathema 0.6.1** (`>=0.6.1,<0.7`). Tool names, the verdict and
+**Written against mathema 0.6.2** (`>=0.6.2,<0.7`). Tool names, the verdict and
 acceptance vocabularies, the claim grammar and the badge artifacts all move
 between minor versions. If `mathema --version` reports a different line,
 say so and check the surface rather than trusting this document.

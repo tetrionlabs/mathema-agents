@@ -31,7 +31,7 @@ before you report anything about it. If you cannot run the checker (no
 implementation available, no test harness), say that plainly instead of
 asserting a verdict.
 
-**Written against mathema 0.6.1** (`>=0.6.1,<0.7`). Tool names, the verdict and
+**Written against mathema 0.6.2** (`>=0.6.2,<0.7`). Tool names, the verdict and
 acceptance vocabularies, the claim grammar and the badge artifacts all move
 between minor versions. If `mathema --version` reports a different line,
 say so and check the surface rather than trusting this document.
@@ -182,16 +182,20 @@ This is the stage this skill mainly does. Three parts:
 #### Strings and records take a language
 
 A string or record parameter is quantified over a language, `L[...]`,
-served by the `mathema-language` package (`pip install "mathema[language]"`,
-also in `mathema[all]`); without it the claim is `unknown`, "needs
-mathema-language". The language decides what the verdict covers, so pick
-what the caller really passes:
+served by the `mathema-language` package (0.2 or later: `pip install
+mathema mathema-language`, since mathema 0.6.2's `[language]` and
+`[all]` extras still install 0.1); without it the claim is `unknown`,
+"needs mathema-language". The language decides what the verdict covers,
+so pick what the caller really passes:
 
 - **Text.** `L[unicode]` for anything a user, file or service sends, and
   narrow only to what the calling code enforces: `L[ascii, len <= 32]`,
-  `L[unicode] \ {""}`, or a format (`L[uuid]`, `L[iso_date]`, `L[email]`,
-  `L[json]`). A `Literal`, a `str` `Enum` or a guard to a set is a finite
-  set, swept member by member.
+  `L[unicode] \ {""}`, or a format (`L[uuid]`, `L[iso_date]`, `L[ipv4]`,
+  `L[json]`). A config file is `L[yaml]` (read as YAML 1.2; its first
+  hazards are the documents PyYAML's 1.1 rules read differently, such as
+  `country: no`) or `L[toml]` (dates come back as `datetime` objects).
+  A `Literal`, a `str` `Enum` or a guard to a set is a finite set, swept
+  member by member.
 - **Records.** Name the schema the application already has, by dotted
   path: `L[app.forms.SignupForm]` (pydantic), `L[app.db.Order]`
   (SQLAlchemy), a Django model, a dataclass, a TypedDict, or a JSON Schema
@@ -202,6 +206,23 @@ what the caller really passes:
   `| {absent}` to keep records where the path is `None`, a key left out
   or an index past the end. A `None` list element or a NaN is a hole,
   `missing`, not absent.
+- **Command lines.** `L[app.cli.build_parser]` names an argparse parser,
+  or a function of no arguments annotated to return `ArgumentParser`
+  (how most command lines are built): its members are the namespaces
+  `parse_args` returns, one shape per subcommand, so a handler taking
+  `args` is claimed over every namespace a user can produce. A bound on a
+  function that reads only numeric options is `proven`; one that branches
+  on the subcommand or a `choices` option is decided by running the
+  code, so expect `holds`. The raw `argv` a `main` receives is
+  `mathema_language.argv.argv_language(build_parser)`, registered under a
+  name with `mathema.languages.register_language` (so from Python, not a
+  claims file, for now): over it `excluded_outside_domain(argv)` checks
+  the program refuses what argparse refuses, with exit code 2, and
+  `is_language_defined(argv)` that every accepted command line gets a
+  return or exit code 0 or 1. Reading a parser warns about the defects
+  argparse accepts silently (`type=bool`, a default outside its choices
+  or that its type refuses, two options storing into one name); fix
+  those before claiming.
 - **Trees.** Bound the shape, `L[app.Comment, depth <= 20]`; an unbounded
   recursive language offers a member one past the recursion limit.
 
