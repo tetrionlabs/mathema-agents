@@ -29,7 +29,7 @@ claim and an implementation disagree; it does not say which is wrong. That
 turns on intent, not evidence, which is why there is no accept tool and why
 `pending_decisions` can only tell you a decision is owed.
 
-**Written against mathema 0.6.1** (`>=0.6.1,<0.7`). Tool names, the verdict and
+**Written against mathema 0.6.2** (`>=0.6.2,<0.7`). Tool names, the verdict and
 acceptance vocabularies, the claim grammar and the badge artifacts all move
 between minor versions. If `mathema --version` reports a different line,
 say so and check the surface rather than trusting this document.
