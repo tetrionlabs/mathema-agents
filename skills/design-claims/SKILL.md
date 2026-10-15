@@ -182,10 +182,9 @@ This is the stage this skill mainly does. Three parts:
 #### Strings and records take a language
 
 A string or record parameter is quantified over a language, `L[...]`,
-served by the `mathema-language` package (0.2 or later: `pip install
-mathema mathema-language`, since mathema 0.6.2's `[language]` and
-`[all]` extras still install 0.1); without it the claim is `unknown`,
-"needs mathema-language". The language decides what the verdict covers,
+served by the `mathema-language` package (`pip install "mathema[language]"`,
+also in `mathema[all]`, which install 0.2 or later from mathema 0.6.2.1);
+without it the claim is `unknown`, "needs mathema-language". The language decides what the verdict covers,
 so pick what the caller really passes:
 
 - **Text.** `L[unicode]` for anything a user, file or service sends, and
