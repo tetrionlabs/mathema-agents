@@ -29,7 +29,7 @@ claim and an implementation disagree; it does not say which is wrong. That
 turns on intent, not evidence, which is why there is no accept tool and why
 `pending_decisions` can only tell you a decision is owed.
 
-**Written against mathema 0.6.2** (`>=0.6.2,<0.7`). Tool names, the verdict and
+**Written against mathema 0.6.3** (`>=0.6.3,<0.7`). Tool names, the verdict and
 acceptance vocabularies, the claim grammar and the badge artifacts all move
 between minor versions. If `mathema --version` reports a different line,
 say so and check the surface rather than trusting this document.
@@ -211,7 +211,12 @@ summary line, a bare declaration); **`documented`** (an explicit `Intent:`
 block); **accepted** (a human ran `mathema accept --intent`, binding the
 text to the signature and raised-exception surface, so a body-only refactor
 keeps it and changing any of those re-opens it). The top rung is a human
-act, not yours to grant, like a verdict. **Your move is the middle one:
+act, not yours to grant, like a verdict. An `Intent:` block is the
+function's intent whenever it is present, even beside a summary line.
+`mathema accept --intent` with no key walks every intent nobody has
+accepted yet, from the README through packages and modules to functions;
+`pending_decisions` lists each as an `intent-acceptance-new` row and
+`verify` counts them, so hand them to the person in one batch. **Your move is the middle one:
 writing an `Intent:` block promotes `declared` to `documented`**, the
 cheapest promotion in the system.
 
@@ -514,11 +519,20 @@ claim is minutes old, so a novel falsification is more likely a misreading
 than a bug nobody has hit. The level that matters is the function's own,
 not the repository's.
 
-Check which line failed first. Since 0.6.1 a record shows the mathematics
-and the float64 computation separately, and a claim is falsified when
-either is; a failure only on the computation line (an overflow, a NaN
-from present inputs) is about the code's arithmetic, and the record
-names the condition number and offers a narrower domain.
+Check which line failed first. A record shows the mathematics and the
+float64 computation separately, and a claim is falsified when either is.
+Since 0.6.3 the mathematics line over a finite domain is exact: the body
+is read in exact arithmetic, so `x + 2e-9` against `f(x) == x` is
+falsified there even where float64 agrees. A declared tolerance on `==`,
+`<=`, `>=` or `!=` binds the computation line only; write "close enough"
+as `~=`, with a tolerance that names its kind (`{rel: 1e-12, floor:
+1e-15}`, `{ulp: 4}`, `{abs: 1e-9}`; a bare number keeps its old meaning).
+A failure only on the computation line (an overflow, a NaN from present
+inputs) is about the code's arithmetic: the record names the condition
+number, offers a narrower domain, and along an unbounded direction offers
+`let |inf| be B`, which bounds the computation only and leaves the
+proof's domain whole. `f =:= g` records both lines as well, the
+computation as a row named `NAME[float]`.
 
 Before reporting any falsification as a defect, **write the claim that
 would hold if the code were right and check it**; a held claim that cleanly
@@ -533,7 +547,15 @@ skill, Stage 4, for the longer form.
 - **Omit `route:` in a claims file unless you mean to constrain it.** A
   checker with more than one route picks the strongest it can serve;
   pinning one can only take evidence away. A file pinned to `route: probe`
-  gave 0 proven where the same file without the line gave dozens.
+  gave 0 proven where the same file without the line gave dozens. Pinning
+  `route: derive` costs in the other direction: since 0.6.3 a claim derive
+  cannot settle ends `unknown` with derive's reason, never `holds`.
+- **A `None` from present inputs is no value.** Since 0.6.3 a function that
+  returns `None` under a return type that does not declare it
+  (`Optional[T]`, `T | None`, `None`, `Any` and `object` declare it; no
+  annotation does not) fails its value claim there, with the reason code
+  `implementation:absent`. If `None` is a real answer, annotate the
+  `Optional`; otherwise the falsification is the finding.
 - **Explore ad-hoc claims against a scratch root, never your project
   root.** `adjudicate_target(claims=[...])` writes nothing, but the tool
   `verify_project` and the Python API's `mathema.write_spec` persist, and ad-hoc claims have

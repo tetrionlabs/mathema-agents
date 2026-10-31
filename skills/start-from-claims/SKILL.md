@@ -29,7 +29,7 @@ the body satisfies it. The prior is also the comfortable one, as the
 until shown otherwise, so a falsification means "not implemented yet" or
 "implemented wrong", never a mystery.
 
-**Written against mathema 0.6.2** (`>=0.6.2,<0.7`). Tool names, the verdict and
+**Written against mathema 0.6.3** (`>=0.6.3,<0.7`). Tool names, the verdict and
 acceptance vocabularies, the claim grammar and the badge artifacts all move
 between minor versions. If `mathema --version` reports a different line,
 say so and check the surface rather than trusting this document.
