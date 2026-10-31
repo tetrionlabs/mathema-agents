@@ -31,7 +31,7 @@ before you report anything about it. If you cannot run the checker (no
 implementation available, no test harness), say that plainly instead of
 asserting a verdict.
 
-**Written against mathema 0.6.2** (`>=0.6.2,<0.7`). Tool names, the verdict and
+**Written against mathema 0.6.3** (`>=0.6.3,<0.7`). Tool names, the verdict and
 acceptance vocabularies, the claim grammar and the badge artifacts all move
 between minor versions. If `mathema --version` reports a different line,
 say so and check the surface rather than trusting this document.
@@ -173,9 +173,11 @@ This is the stage this skill mainly does. Three parts:
    the route line removed gave **39 proven** and adjudicated 20 of the 22.
    Nothing anywhere indicated that the pin was the cause.
 
-   Pin a route only to *say something*: `derive` to record that you believe
-   a proof exists even where no available tool can check it yet, or `probe`
-   to say a symbolic proof is not what you want here. If you have no such
+   Pin a route only to *say something*: `derive` to say that only a proof
+   counts, or `probe` to say a symbolic proof is not what you want here.
+   Since 0.6.3 `route: derive` means derive: a claim it cannot settle ends
+   `unknown` with derive's reason, never `holds` from sampling, and the
+   probe on that route only looks for a falsifying point. If you have no such
    intent, leave the field out. Omit `grammar`; mathema's claim language is
    the default. Set it only to mark a claim written for another checker.
 

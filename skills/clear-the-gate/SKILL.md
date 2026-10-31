@@ -26,7 +26,7 @@ That wall is about who decides, not who types. Everything around the
 decision is yours: the witness, the source, which verbs are legal, drafting
 a correction, running it to see whether it holds, and what comes after.
 
-**Written against mathema 0.6.2** (`>=0.6.2,<0.7`). Tool names, the verdict and
+**Written against mathema 0.6.3** (`>=0.6.3,<0.7`). Tool names, the verdict and
 acceptance vocabularies, the claim grammar and the badge artifacts all move
 between minor versions. If `mathema --version` reports a different line,
 say so and check the surface rather than trusting this document.
@@ -173,10 +173,23 @@ to make a falsification disappear: that is the "quietly rewritten into
 something true" failure the whole method exists to prevent, and it breaks
 the record's integrity stamp besides.
 
+## After upgrading mathema
+
+Upgrading to 0.6.3 re-records every claim once: claim hashes now carry the
+frontend's namespace (`py:`), and each record states its old and new form.
+That is neither a code change nor a moved function, so never answer it
+with `accept --as reconciled`. Re-verify, then read what moved: 0.6.3
+moves some verdicts once, each by a rule its changelog states (an exact
+mathematics line over a finite domain, `route: derive` no longer settling
+by sampling, `None` under an undeclared return type read as no value,
+`is_language_defined` falsified by a value returned for a non-member).
+Brief the person on every verdict that moved, with the rule beside it,
+before anything is accepted.
+
 ## Order of operations
 
-Gather once (`pending_decisions`, `verify_project`, source spans from
-`project_index`), classify, prepare, brief, let the human accept,
+Gather once (`pending_decisions`, its `intent-acceptance-new` rows
+included, `verify_project`, source spans from `project_index`), classify, prepare, brief, let the human accept,
 re-verify, then refresh coverage, then regenerate badges, then commit.
 
 The two ordering mistakes that actually happen: generating badges **before**
